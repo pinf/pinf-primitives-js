@@ -14,12 +14,9 @@ exports.normalizeEnvironmentVariables = function(env, overrides) {
 	if (!ENV.PINF_PROGRAM && !ENV.CWD) {
 		throw new Error("Either `ENV.PINF_PROGRAM` (" + ENV.PINF_PROGRAM + ") or `ENV.CWD` (" + ENV.CWD + ") must be set!");
 	}
-	if (!ENV.PINF_PACKAGE && !ENV.CWD) {
-		throw new Error("Either `ENV.PINF_PACKAGE` (" + ENV.PINF_PACKAGE + ") or `ENV.CWD` (" + ENV.CWD + ") must be set!");
-	}
 	// `PINF_PACKAGES` contains a list of directories used to lookup packages.
 	// Packages should be stored in these directories where the package directory
-	// represents the global ID of the package.
+	// represents the global ID of the package. This is ideally a DNS-based hostname with path.
 	ENV.PINF_PACKAGES = (typeof ENV.PINF_PACKAGES === "string") ? ENV.PINF_PACKAGES : (process.env.PINF_PACKAGES || "");
 	// If `PINF_PROGRAM_PARENT` is set the parent descriptor will be merged on top of our descriptor.
 	// Under normal conditions the `PINF_PROGRAM_PARENT` varibale should never be set in the shell directly.
@@ -31,7 +28,7 @@ exports.normalizeEnvironmentVariables = function(env, overrides) {
 	//   * A local filesystem path to a `program.json` file (how to boot & custom config).
 	ENV.PINF_PROGRAM = ENV.PINF_PROGRAM || PATH.join(ENV.CWD, "program.json");
 	//   * A local filesystem path to a `package.json` file (what to boot & default config).
-	ENV.PINF_PACKAGE = ENV.PINF_PACKAGE || PATH.join(ENV.CWD, "package.json");
+	ENV.PINF_PACKAGE = ENV.PINF_PACKAGE || (ENV.CWD && PATH.join(ENV.CWD, "package.json")) || "";
 	//   * A local filesystem path to a `program.rt.json` file (the state to boot in).
 	ENV.PINF_RUNTIME = ENV.PINF_RUNTIME || PATH.join(ENV.PINF_PROGRAM_PARENT || ENV.PINF_PROGRAM, "../.rt/program.rt.json");
 	//   * The mode the runtime should run it. Will load `program.$PINF_MODE.json`.
